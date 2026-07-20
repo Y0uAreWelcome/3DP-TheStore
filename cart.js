@@ -17,6 +17,26 @@ function formatPrice(value) {
     return `$${Number(value).toFixed(2)}`;
 }
 
+async function createCheckoutSession(cart) {
+    const response = await fetch('/create-checkout-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: cart }),
+    });
+
+    if (!response.ok) {
+        const error = await response.json().catch(() => null);
+        throw new Error(error?.message || 'Failed to create checkout session');
+    }
+
+    const data = await response.json();
+    if (!data.url) {
+        throw new Error('Checkout session response missing URL');
+    }
+
+    window.location.href = data.url;
+}
+
 function updateCartCount() {
     const count = getCart().reduce((sum, item) => sum + item.quantity, 0);
     const badge = document.querySelector('.cart-count');
@@ -74,7 +94,7 @@ function buildCart(cart) {
                 <div class="cart-total">Total: <strong>${formatPrice(total)}</strong></div>
                 <div class="cart-actions">
                     <button class="btn" data-cart-action="clear" type="button">Clear Cart</button>
-                    <button class="btn btn-secondary" data-cart-action="checkout" type="button" ${cart.length === 0 ? 'disabled' : ''}>Checkout</button>
+                    <button class="btn btn-secondary" data-cart-action="stripe-checkout" type="button" ${cart.length === 0 ? 'disabled' : ''}>Checkout with Stripe</button>
                 </div>
             </div>
         </aside>`;
@@ -91,6 +111,15 @@ function checkoutCart(cart) {
     window.location.href = `mailto:${address}?subject=${subject}&body=${body}`;
 }
 
+async function checkoutWithStripe(cart) {
+    try {
+        await createCheckoutSession(cart);
+    } catch (err) {
+        console.error('Stripe checkout failed:', err);
+        checkoutCart(cart);
+    }
+}
+
 function handleCartAction(event) {
     const button = event.target.closest('[data-cart-action]');
     if (!button) return;
@@ -102,8 +131,10 @@ function handleCartAction(event) {
 
     if (action === 'clear') {
         cart.length = 0;
-    } else if (action === 'checkout') {
-        if (cart.length > 0) checkoutCart(cart);
+    } else if (action === 'stripe-checkout') {
+        if (cart.length > 0) {
+            checkoutWithStripe(cart);
+        }
         return;
     } else if (action === 'remove' && itemIndex > -1) {
         cart.splice(itemIndex, 1);
