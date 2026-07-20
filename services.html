@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T02Y4NC32Z"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-T02Y4NC32Z');
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Print Forge | Services</title>
@@ -12,30 +20,73 @@
     <div id="site-nav"></div>
     <div id="cart-root"></div>
 
-    <main id="main-content" class="page-container">
+    <main id="main-content" class="page-container services-page">
         <h1 class="page-title">Printing Services</h1>
 
         <section class="service-block">
-            <h2>How it Works</h2>
-            <ol>
-                <li>Send your model file by email or use the contact form.</li>
-                <li>We review your design, recommend material, and confirm pricing.</li>
-                <li>We print, clean, finish, and ship the part to your address.</li>
-            </ol>
+            <div class="service-block-content">
+                <h2>How it Works</h2>
+                <ol>
+                    <li>Send your model file by email or use the contact form.</li>
+                    <li>We review your design, recommend material, and confirm pricing.</li>
+                    <li>We print, clean, finish, and ship the part to your address.</li>
+                </ol>
+            </div>
+            <div class="service-block-visual drag-drop-visual">
+                <div class="drag-drop-box">
+                    <div class="drag-drop-icon">⇪</div>
+                    <p class="visual-title">Drag &amp; Drop Your File</p>
+                    <p class="visual-note">Drop .STL, .OBJ, or .STEP files here to start your print request.</p>
+                    <div class="file-chip">Upload-ready model</div>
+                </div>
+            </div>
         </section>
 
         <section class="service-block">
-            <h2>What to Send</h2>
-            <p>Use files like <strong>.STL</strong>, <strong>.OBJ</strong>, or <strong>.STEP</strong>. Include any notes about scale, color, and finish.</p>
+            <div class="service-block-content">
+                <h2>What to Send</h2>
+                <p>Use files like <strong>.STL</strong>, <strong>.OBJ</strong>, or <strong>.STEP</strong>. Include notes about scale, color, and finish so we can deliver exactly what you need.</p>
+            </div>
+            <div class="service-block-visual color-scale-visual">
+                <div class="scale-row">
+                    <span>Material</span>
+                    <div class="scale-bar material-bar"></div>
+                </div>
+                <div class="scale-row">
+                    <span>Color</span>
+                    <div class="scale-bar color-bar"></div>
+                </div>
+                <div class="scale-row">
+                    <span>Finish</span>
+                    <div class="finish-swatches">
+                        <div class="swatch smooth">Smooth</div>
+                        <div class="swatch matte">Matte</div>
+                        <div class="swatch gloss">Gloss</div>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <section class="service-block">
-            <h2>Need Help Finding a Model?</h2>
-            <p>If you found a model online and just want it printed, we can handle the printing and shipping for you.</p>
-            <p>This is ideal when you don't have a 3D printer or access to a print shop.</p>
+            <div class="service-block-content">
+                <h2>Need Help Finding a Model?</h2>
+                <p>If you found a model online and just want it printed, we can handle the printing and shipping for you.</p>
+                <p>This is ideal when you don't have a 3D printer or access to a print shop.</p>
+            </div>
+            <div class="service-block-visual quad-sites-visual">
+                <div class="visual-grid">
+                    <div class="site-card">Thingiverse</div>
+                    <div class="site-card">Printables</div>
+                    <div class="site-card">MyMiniFactory</div>
+                    <div class="site-card">Cults3D</div>
+                </div>
+                <p class="visual-caption">Popular websites for free 3D printing files and models.</p>
+            </div>
         </section>
 
-        <a href="contact.html" class="btn">Contact for Printing</a>
+        <div class="service-actions">
+            <a href="contact.html" class="btn">Contact for Printing</a>
+        </div>
     </main>
     <script src="nav.js"></script>
     <script src="cart.js"></script>
