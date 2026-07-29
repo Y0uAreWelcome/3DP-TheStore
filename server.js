@@ -1,3 +1,54 @@
+const path = require('path');
+const fs = require('fs');
+const express = require('express');
+const Stripe = require('stripe');
+require('dotenv').config();
+
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+if (!STRIPE_SECRET_KEY) {
+    throw new Error('Missing STRIPE_SECRET_KEY in environment. Copy .env.example to .env and set your secret key.');
+}
+
+const stripe = Stripe(STRIPE_SECRET_KEY);
+const app = express(); // <-- Initialized first so app is defined
+
+const publicFolder = path.join(__dirname, '/');
+const dataPath = path.join(__dirname, 'stripe-data.json');
+
+function loadStripeData() {
+    try {
+        const raw = fs.readFileSync(dataPath, 'utf8');
+        return JSON.parse(raw);
+    } catch (err) {
+        return { products: {} };
+    }
+}
+
+function saveStripeData(data) {
+    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2));
+}
+
+async function createStripeProductForItem(item) {
+    const stripeProduct = await stripe.products.create({
+        name: item.name,
+        description: item.description,
+        default_price_data: {
+            currency: item.currency,
+            unit_amount: item.unit_amount,
+        },
+    });
+
+    let priceId = stripeProduct.default_price;
+    if (typeof priceId === 'object' && priceId.id) {
+        priceId = priceId.id;
+    }
+
+    return {
+        stripeProductId: stripeProduct.id,
+        stripePriceId: priceId,
+    };
+}
+
 async function getStripePriceId(item) {
     const itemId = item.id;
     const stripeData = loadStripeData();
@@ -66,4 +117,9 @@ app.post('/create-checkout-session', async (req, res) => {
         console.error(err);
         res.status(500).json({ message: err.message || 'Unable to create checkout session.' });
     }
+});
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+    console.log(`Server listening on http://localhost:${port}`);
 });
