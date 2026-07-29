@@ -28,52 +28,11 @@
             <p class="page-intro">Browse current FPV parts, storage solutions, and a preview of new prints coming soon.</p>
         </div>
 
+        <!-- Dynamic Product Section -->
         <section class="product-section" id="fpv-parts" aria-labelledby="fpv-parts-title">
-            <h2 id="fpv-parts-title">FPV Parts</h2>
-            <!-- Added id="fpv-grid" here so database items can append alongside or below -->
-            <div class="product-grid" id="fpv-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="RDimg4.jpg" alt="RadioMaster RP4TD Folding TPU Antenna Holder" loading="lazy">
-                    </div>
-                    <h3><a href="radio-master.html">RadioMaster RP4TD Folding TPU Antenna Holders</a></h3>
-                    <p class="price">$12.99</p>
-                    <p>Flexible TPU mounts designed to hold folding antennas securely on your FPV rig.</p>
-                    <button class="btn add-to-cart" type="button" data-add-to-cart data-product-id="rfp4td-antenna-holders" data-product-name="RadioMaster RP4TD Folding TPU Antenna Holders" data-product-price="12.99">Add to Cart</button>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="droneMbumper00temp.jpg" alt="5-inch drone FPV motor guard" loading="lazy">
-                    </div>
-                    <h3><a href="drone-motor-guards.html">5" Drone FPV Motor Guards</a></h3>
-                    <p class="price">$18.99</p>
-                    <p>Durable protective guards for motors on 5-inch FPV racing drones.</p>
-                    <button class="btn add-to-cart" type="button" data-add-to-cart data-product-id="5in-motor-guards" data-product-name='5" Drone FPV Motor Guards' data-product-price="18.99">Add to Cart</button>
-                </div>
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="3dprop.png" alt="3D printed 5-inch propellers" loading="lazy">
-                    </div>
-                    <h3><a href="3d-propellers.html">3D Printed 5" Propellers</a></h3>
-                    <p class="price">$9.49</p>
-                    <p>Lightweight, custom 5-inch propellers made for performance and durability.</p>
-                    <button class="btn add-to-cart" type="button" data-add-to-cart data-product-id="5in-propellers" data-product-name='3D Printed 5" Propellers' data-product-price="9.49">Add to Cart</button>
-                </div>
-            </div>
-        </section>
-
-        <section class="product-section" id="storage" aria-labelledby="storage-title">
-            <h2 id="storage-title">Storage</h2>
-            <div class="product-grid">
-                <div class="product-card">
-                    <div class="product-image">
-                        <img src="mmtray2.webp" alt="Tool and parts tray with compartments" loading="lazy">
-                    </div>
-                    <h3><a href="tool-parts-tray.html">Tool & Parts Tray</a></h3>
-                    <p class="price">$12.99</p>
-                    <p>Custom tray sections for organizing screws, props, and repair tools.</p>
-                    <button class="btn add-to-cart" type="button" data-add-to-cart data-product-id="tool-parts-tray" data-product-name="Tool & Parts Tray" data-product-price="12.99">Add to Cart</button>
-                </div>
+            <h2 id="fpv-parts-title">Catalog Items</h2>
+            <div class="product-grid" id="product-grid">
+                <p>Loading products from database...</p>
             </div>
         </section>
 
@@ -94,29 +53,42 @@
     <script src="nav.js"></script>
     <script src="cart.js"></script>
 
-    <!-- Supabase Integration Script (Pulls items from database and adds them) -->
+    <!-- Supabase Dynamic Loader Script -->
     <script>
         const supabaseUrl = 'https://tvvoimrcezxwjhlaykhf.supabase.co'
         const supabaseKey = 'sb_publishable_E5jKhI2kNpzPSUafsI3IIw_D3UT06k-'
         const client = supabase.createClient(supabaseUrl, supabaseKey)
 
         async function loadStoreProducts() {
+            const grid = document.getElementById('product-grid')
+            
+            // Fetch everything from your database table
             const { data: products, error } = await client.from('products').select('*')
 
             if (error) {
                 console.error('Error fetching products:', error)
+                grid.innerHTML = '<p>Error loading products from database.</p>'
                 return
             }
 
-            const fpvGrid = document.getElementById('fpv-grid')
-            if (!products || products.length === 0 || !fpvGrid) return
+            if (!products || products.length === 0) {
+                grid.innerHTML = '<p>No products found in database.</p>'
+                return
+            }
 
-            // This appends your database items right alongside your existing hardcoded HTML cards
+            // Clear loading message
+            grid.innerHTML = ''
+
+            // Loop through each item in Supabase and force it into your card "mold"
             products.forEach(product => {
                 const cardHTML = `
                     <div class="product-card">
+                        <div class="product-image">
+                            <img src="${product.image_url || 'RDimg4.jpg'}" alt="${product.name}" loading="lazy">
+                        </div>
                         <h3>${product.name}</h3>
                         <p class="price">$${Number(product.price).toFixed(2)}</p>
+                        <p>${product.description || 'Custom 3D printed part.'}</p>
                         <button class="btn add-to-cart" type="button" 
                             data-add-to-cart 
                             data-product-id="${product.name}" 
@@ -126,7 +98,7 @@
                         </button>
                     </div>
                 `
-                fpvGrid.innerHTML += cardHTML
+                grid.innerHTML += cardHTML
             })
         }
 
