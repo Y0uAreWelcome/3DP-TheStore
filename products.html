@@ -81,13 +81,13 @@
 
             // Loop through each item in Supabase and build the card
             products.forEach(product => {
-                // Automatically generate a safe, unique ID slug from the product name
                 const generatedId = product.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                const safeName = product.name.replace(/"/g, '&quot;');
 
                 const cardHTML = `
                     <div class="product-card">
                         <div class="product-image">
-                            <img src="${product.image_url || 'RDimg4.jpg'}" alt="${product.name}" loading="lazy">
+                            <img src="${product.image_url || 'RDimg4.jpg'}" alt="${safeName}" loading="lazy">
                         </div>
                         <h3>${product.name}</h3>
                         <p class="price">$${Number(product.price).toFixed(2)}</p>
@@ -95,7 +95,7 @@
                         <button class="btn add-to-cart" type="button" 
                             data-add-to-cart 
                             data-product-id="${generatedId}" 
-                            data-product-name="${product.name}" 
+                            data-product-name="${safeName}" 
                             data-product-price="${product.price}"
                             data-product-description="${product.description || ''}">
                             Add to Cart
