@@ -12,14 +12,6 @@ if (navContainer) {
                     <span class="dropdown-image" aria-hidden="true">✈️</span>
                     <span>FPV Parts</span>
                 </a>
-                <a href="products.html#storage" class="dropdown-item">
-                    <span class="dropdown-image" aria-hidden="true">🧰</span>
-                    <span>Storage</span>
-                </a>
-                <a href="products.html#more-products" class="dropdown-item">
-                    <span class="dropdown-image" aria-hidden="true">✨</span>
-                    <span>More Products</span>
-                </a>
             </div>
         </li>
         <li><a href="services.html">Services</a></li>
