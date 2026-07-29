@@ -91,9 +91,10 @@
                         <p>${product.description || 'Custom 3D printed part.'}</p>
                         <button class="btn add-to-cart" type="button" 
                             data-add-to-cart 
-                            data-product-id="${product.name}" 
+                            data-product-id="${product.id}" 
                             data-product-name="${product.name}" 
-                            data-product-price="${product.price}">
+                            data-product-price="${product.price}"
+                            data-product-description="${product.description || ''}">
                             Add to Cart
                         </button>
                     </div>
