@@ -172,6 +172,7 @@ function listenForAddToCart() {
             id: button.getAttribute('data-product-id'),
             name: button.getAttribute('data-product-name'),
             price: Number(button.getAttribute('data-product-price')),
+            description: button.getAttribute('data-product-description'),
         };
         addProductToCart(product);
     });
