@@ -1,4 +1,4 @@
-# 3dp
+# 3dp The Store
 
 Excited to share my latest project: A fully automated, production-grade e-commerce web stack for 3D printed FPV parts!
 
