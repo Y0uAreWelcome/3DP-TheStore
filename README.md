@@ -12,7 +12,7 @@ Here is what went into building this modern web architecture:
 
     Backend & Payments: A custom Node.js/Express server that dynamically generates and handles secure checkout sessions via Stripe on the fly.
 
-    Hosting & Deployment: Managed through GitHub for version control, deployed via Render for reliable server execution.
+    Hosting & Deployment: Managed through GitHub.
 
     Security & Performance: Secured and accelerated globally using Cloudflare for DNS management, SSL protection, and edge optimization.
 
