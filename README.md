@@ -18,6 +18,5 @@ Here is what went into building this modern web architecture:
 
 It’s been an incredible journey bringing this stack together from scratch. Check out the setup and happy printing! 🛠️🖨️
 
-https://yourbarbershop.homes/index.html
+https://3dpstore.us.com/
 
-P.S. I bought this domain because it was cheap haha... I plan on finding a more fitting domain name.
