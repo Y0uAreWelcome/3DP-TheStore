@@ -1,5 +1,44 @@
 const CART_STORAGE_KEY = '3dp_store_cart';
 
+async function createStripeCheckoutSession(cart) {
+    const payload = {
+        items: cart.map(item => ({
+            id: item.id,
+            name: item.name,
+            description: item.description || 'Custom 3D printed part.',
+            price: item.price,
+            quantity: item.quantity,
+        })),
+    };
+
+    const endpoints = ['/api/create-checkout-session', '/create-checkout-session'];
+
+    let lastError = null;
+    for (const endpoint of endpoints) {
+        try {
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || 'Unable to create checkout session.');
+            }
+
+            return data.url;
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error('Unable to create checkout session.');
+}
+
 function getCart() {
     try {
         const raw = localStorage.getItem(CART_STORAGE_KEY);
@@ -15,26 +54,6 @@ function saveCart(cart) {
 
 function formatPrice(value) {
     return `$${Number(value).toFixed(2)}`;
-}
-
-async function createCheckoutSession(cart) {
-    const response = await fetch('/create-checkout-session', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cart }),
-    });
-
-    if (!response.ok) {
-        const error = await response.json().catch(() => null);
-        throw new Error(error?.message || 'Failed to create checkout session');
-    }
-
-    const data = await response.json();
-    if (!data.url) {
-        throw new Error('Checkout session response missing URL');
-    }
-
-    window.location.href = data.url;
 }
 
 function updateCartCount() {
@@ -112,11 +131,22 @@ function checkoutCart(cart) {
 }
 
 async function checkoutWithStripe(cart) {
+    const checkoutButton = document.querySelector('[data-cart-action="stripe-checkout"]');
+    if (checkoutButton) {
+        checkoutButton.disabled = true;
+        checkoutButton.textContent = 'Creating checkout...';
+    }
+
     try {
-        await createCheckoutSession(cart);
-    } catch (err) {
-        console.error('Stripe checkout failed:', err);
-        checkoutCart(cart);
+        const checkoutUrl = await createStripeCheckoutSession(cart);
+        window.location.href = checkoutUrl;
+    } catch (error) {
+        console.error(error);
+        if (checkoutButton) {
+            checkoutButton.disabled = false;
+            checkoutButton.textContent = 'Checkout with Stripe';
+        }
+        window.alert(error.message || 'Unable to start Stripe checkout.');
     }
 }
 

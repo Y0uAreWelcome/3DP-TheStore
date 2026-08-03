@@ -22,8 +22,6 @@
 <link rel="icon" type="image/png" sizes="192x192" href="https://3dpstore.us.com/android-chrome-192x192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="https://3dpstore.us.com/android-chrome-512x512.png">
     <link rel="stylesheet" href="style.css">
-    <!-- Supabase Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
     <a class="skip-link" href="#main-content">Skip to content</a>
@@ -62,60 +60,56 @@
     <script src="nav.js"></script>
     <script src="cart.js"></script>
 
-    <!-- Supabase Dynamic Loader Script -->
     <script>
-        const supabaseUrl = 'https://tvvoimrcezxwjhlaykhf.supabase.co'
-        const supabaseKey = 'sb_publishable_E5jKhI2kNpzPSUafsI3IIw_D3UT06k-'
-        const client = supabase.createClient(supabaseUrl, supabaseKey)
-
         async function loadStoreProducts() {
-            const grid = document.getElementById('product-grid')
-            
-            // Fetch everything from your database table
-            const { data: products, error } = await client.from('products').select('*')
+            const grid = document.getElementById('product-grid');
 
-            if (error) {
-                console.error('Error fetching products:', error)
-                grid.innerHTML = '<p>Error loading products from database.</p>'
-                return
-            }
+            try {
+                const response = await fetch('/api/products');
+                const products = await response.json();
 
-            if (!products || products.length === 0) {
-                grid.innerHTML = '<p>No products found in database.</p>'
-                return
-            }
+                if (!response.ok) {
+                    throw new Error(products.message || 'Unable to load products.');
+                }
 
-            // Clear loading message
-            grid.innerHTML = ''
+                if (!Array.isArray(products) || products.length === 0) {
+                    grid.innerHTML = '<p>No products found in database.</p>';
+                    return;
+                }
 
-            // Loop through each item in Supabase and build the card
-            products.forEach(product => {
-                const generatedId = product.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
-                const safeName = product.name.replace(/"/g, '&quot;');
+                grid.innerHTML = '';
 
-                const cardHTML = `
-                    <div class="product-card">
-                        <div class="product-image">
-                            <img src="${product.image_url || 'RDimg4.jpg'}" alt="${safeName}" loading="lazy">
+                products.forEach(product => {
+                    const generatedId = product.name.toLowerCase().replace(/[^a-z0-9]/g, '-');
+                    const safeName = product.name.replace(/"/g, '&quot;');
+
+                    const cardHTML = `
+                        <div class="product-card">
+                            <div class="product-image">
+                                <img src="${product.image_url || 'RDimg4.jpg'}" alt="${safeName}" loading="lazy">
+                            </div>
+                            <h3>${product.name}</h3>
+                            <p class="price">$${Number(product.price).toFixed(2)}</p>
+                            <p>${product.description || 'Custom 3D printed part.'}</p>
+                            <button class="btn add-to-cart" type="button"
+                                data-add-to-cart
+                                data-product-id="${generatedId}"
+                                data-product-name="${safeName}"
+                                data-product-price="${product.price}"
+                                data-product-description="${product.description || ''}">
+                                Add to Cart
+                            </button>
                         </div>
-                        <h3>${product.name}</h3>
-                        <p class="price">$${Number(product.price).toFixed(2)}</p>
-                        <p>${product.description || 'Custom 3D printed part.'}</p>
-                        <button class="btn add-to-cart" type="button" 
-                            data-add-to-cart 
-                            data-product-id="${generatedId}" 
-                            data-product-name="${safeName}" 
-                            data-product-price="${product.price}"
-                            data-product-description="${product.description || ''}">
-                            Add to Cart
-                        </button>
-                    </div>
-                `
-                grid.innerHTML += cardHTML
-            })
+                    `;
+                    grid.innerHTML += cardHTML;
+                });
+            } catch (error) {
+                console.error('Error fetching products:', error);
+                grid.innerHTML = '<p>Error loading products from database.</p>';
+            }
         }
 
-        loadStoreProducts()
+        loadStoreProducts();
     </script>
 </body>
 </html>
