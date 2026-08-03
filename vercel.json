@@ -2,44 +2,26 @@
   "version": 2,
   "cleanUrls": true,
   "trailingSlash": false,
-  "builds": [
+  "rewrites": [
     {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
+      "source": "/products",
+      "destination": "/products.html"
     },
     {
-      "src": "**/*.{html,css,js,png,jpg,jpeg,gif,svg,avif,webp,ico}",
-      "use": "@vercel/static"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "source": "/services",
+      "destination": "/services.html"
     },
     {
-      "src": "/products",
-      "dest": "/products.html"
+      "source": "/contact",
+      "destination": "/contact.html"
     },
     {
-      "src": "/services",
-      "dest": "/services.html"
+      "source": "/success",
+      "destination": "/success.html"
     },
     {
-      "src": "/contact",
-      "dest": "/contact.html"
-    },
-    {
-      "src": "/success",
-      "dest": "/success.html"
-    },
-    {
-      "src": "/cancel",
-      "dest": "/cancel.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
+      "source": "/cancel",
+      "destination": "/cancel.html"
     }
   ]
 }
