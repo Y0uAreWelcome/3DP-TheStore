@@ -11,10 +11,13 @@ if (!STRIPE_SECRET_KEY) {
 const stripe = Stripe(STRIPE_SECRET_KEY);
 const app = express();
 
-const publicFolder = path.join(__dirname, '/');
+const publicFolder = __dirname;
 
 app.use(express.json());
 app.use(express.static(publicFolder));
+app.get('/', (req, res) => {
+    res.sendFile(path.join(publicFolder, 'index.html'));
+});
 
 async function createCheckoutSessionHandler(req, res) {
     try {
@@ -64,7 +67,11 @@ async function createCheckoutSessionHandler(req, res) {
 app.post('/api/create-checkout-session', createCheckoutSessionHandler);
 app.post('/create-checkout-session', createCheckoutSessionHandler);
 
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-    console.log(`Server listening on http://localhost:${port}`);
-});
+if (require.main === module) {
+    const port = process.env.PORT || 3000;
+    app.listen(port, () => {
+        console.log(`Server listening on http://localhost:${port}`);
+    });
+}
+
+module.exports = app;
