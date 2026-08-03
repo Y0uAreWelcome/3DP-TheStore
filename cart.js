@@ -24,10 +24,20 @@ async function createStripeCheckoutSession(cart) {
                 body: JSON.stringify(payload),
             });
 
-            const data = await response.json();
+            const rawText = await response.text();
+            let data = {};
+            try {
+                data = rawText ? JSON.parse(rawText) : {};
+            } catch {
+                data = {};
+            }
 
             if (!response.ok) {
-                throw new Error(data.message || 'Unable to create checkout session.');
+                throw new Error(data.message || rawText || 'Unable to create checkout session.');
+            }
+
+            if (!data.url) {
+                throw new Error('The checkout endpoint did not return a Stripe session URL.');
             }
 
             return data.url;

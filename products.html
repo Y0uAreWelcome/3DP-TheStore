@@ -66,7 +66,14 @@
 
             try {
                 const response = await fetch('/api/products');
-                const products = await response.json();
+                const rawText = await response.text();
+                let products = [];
+
+                try {
+                    products = rawText ? JSON.parse(rawText) : [];
+                } catch {
+                    throw new Error('The products endpoint returned an unexpected response.');
+                }
 
                 if (!response.ok) {
                     throw new Error(products.message || 'Unable to load products.');
