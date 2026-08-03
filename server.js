@@ -1,26 +1,46 @@
 const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const Stripe = require('stripe');
 require('dotenv').config();
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-if (!STRIPE_SECRET_KEY) {
-    throw new Error('Missing STRIPE_SECRET_KEY in environment. Copy .env.example to .env and set your secret key.');
-}
-
-const stripe = Stripe(STRIPE_SECRET_KEY);
+const stripe = STRIPE_SECRET_KEY ? new Stripe(STRIPE_SECRET_KEY) : null;
 const app = express();
 
 const publicFolder = __dirname;
+const pageAliases = {
+    products: 'products.html',
+    services: 'services.html',
+    contact: 'contact.html',
+    success: 'success.html',
+    cancel: 'cancel.html',
+};
 
 app.use(express.json());
 app.use(express.static(publicFolder));
+
 app.get('/', (req, res) => {
     res.sendFile(path.join(publicFolder, 'index.html'));
 });
 
+app.get('/:page', (req, res, next) => {
+    const requestedPage = req.params.page;
+    if (requestedPage in pageAliases) {
+        const filePath = path.join(publicFolder, pageAliases[requestedPage]);
+        if (fs.existsSync(filePath)) {
+            return res.sendFile(filePath);
+        }
+    }
+    return next();
+});
+
 async function createCheckoutSessionHandler(req, res) {
     try {
+        if (!stripe) {
+            return res.status(500).json({ message: 'Stripe is not configured yet. Add STRIPE_SECRET_KEY to your Vercel environment variables.' });
+        }
+
         const items = req.body.items;
         if (!Array.isArray(items) || items.length === 0) {
             return res.status(400).json({ message: 'Cart items are required.' });
